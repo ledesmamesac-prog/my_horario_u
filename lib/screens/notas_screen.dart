@@ -151,7 +151,7 @@ class _NotasScreenState extends State<NotasScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: colorEstado.withOpacity(0.1),
+                        color: colorEstado.withAlpha(26),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: colorEstado, width: 2),
                       ),
@@ -393,7 +393,7 @@ class _NotasScreenState extends State<NotasScreen> {
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.moradoPrincipal.withOpacity(0.1),
+                      color: AppColors.moradoPrincipal.withAlpha(26),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -573,7 +573,7 @@ class _NotasScreenState extends State<NotasScreen> {
                 padding: const EdgeInsets.all(8),
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.moradoPrincipal.withOpacity(0.1),
+                  color: AppColors.moradoPrincipal.withAlpha(26),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

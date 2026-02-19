@@ -1,6 +1,5 @@
 // file: lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'providers/materia_provider.dart';
 import 'providers/horario_provider.dart';
@@ -8,22 +7,28 @@ import 'providers/nota_provider.dart';
 import 'providers/corte_provider.dart';
 import 'providers/evaluacion_provider.dart';
 import 'providers/tarea_provider.dart';
-import 'providers/apunte_provider.dart'; // NUEVO
+import 'providers/apunte_provider.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/materias_screen.dart';
 import 'screens/horario_screen.dart';
 import 'screens/notas_screen.dart';
-import 'screens/apuntes_screen.dart'; // NUEVO
+import 'screens/apuntes_screen.dart';
 import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';  // NUEVO
+import 'package:intl/intl.dart';                    // NUEVO
 
-// Mantener ValueNotifier si lo usas
 final ValueNotifier<int> navigationNotifier = ValueNotifier<int>(0);
 
 void main() async {
-  // NUEVO: Inicializar servicios
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('es');
+
+  // NUEVO: Inicializar locale español
+  await initializeDateFormatting('es', null);
+  Intl.defaultLocale = 'es';
+  debugPrint('✅ Locale español inicializado');
+
+  // Inicializar notificaciones
   await NotificationService.instance.initialize();
 
   runApp(const MyHorarioU());
@@ -37,24 +42,23 @@ class MyHorarioU extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MateriaProvider()),
-        ChangeNotifierProvider(create: (_) => HorarioProvider()),
+        ChangeNotifierProvider(create: (_) => HorarioProvider()), // Auto-programa notificaciones
         ChangeNotifierProvider(create: (_) => NotaProvider()),
         ChangeNotifierProvider(create: (_) => CorteProvider()),
         ChangeNotifierProvider(create: (_) => EvaluacionProvider()),
-        ChangeNotifierProvider(create: (_) => TareaProvider()), // NUEVO
-        ChangeNotifierProvider(create: (_) => ApunteProvider()), // NUEVO
+        ChangeNotifierProvider(create: (_) => TareaProvider()),
+        ChangeNotifierProvider(create: (_) => ApunteProvider()),
       ],
       child: MaterialApp(
         title: 'My Horario U',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme, // NUEVO TEMA
+        theme: AppTheme.lightTheme,
         home: const MainNavigation(),
       ),
     );
   }
 }
 
-// MANTENER TODO EL CÓDIGO DE MainNavigation IGUAL
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -62,7 +66,7 @@ class MainNavigation extends StatefulWidget {
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
+class _MainNavigationState extends State<MainNavigation> with WidgetsBindingObserver {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = const [
@@ -70,26 +74,46 @@ class _MainNavigationState extends State<MainNavigation> {
     MateriasScreen(),
     HorarioScreen(),
     NotasScreen(),
-    ApuntesScreen(), // NUEVO
+    ApuntesScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
     navigationNotifier.addListener(_onNavigationChanged);
+    WidgetsBinding.instance.addObserver(this);
+
+    // NUEVO: Reprogramar notificaciones cuando la app vuelve al foreground
+    _reprogramarNotificaciones();
   }
 
   @override
   void dispose() {
     navigationNotifier.removeListener(_onNavigationChanged);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // NUEVO: Detectar cuando la app vuelve del background
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _reprogramarNotificaciones();
+    }
+  }
+
+  Future<void> _reprogramarNotificaciones() async {
+    // Esperar a que los providers estén listos
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      final horarioProvider = context.read<HorarioProvider>();
+      await horarioProvider.scheduleClassNotifications();
+    }
   }
 
   void _onNavigationChanged() {
     if (navigationNotifier.value != _selectedIndex) {
-      setState(() {
-        _selectedIndex = navigationNotifier.value;
-      });
+      setState(() => _selectedIndex = navigationNotifier.value);
     }
   }
 
@@ -140,11 +164,11 @@ class _MainNavigationState extends State<MainNavigation> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.grade_rounded),
-                label: 'Calificaciones', // RENOMBRADO
+                label: 'Calificaciones',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.sticky_note_2_rounded),
-                label: 'Apuntes', // NUEVO
+                label: 'Apuntes',
               ),
             ],
           ),

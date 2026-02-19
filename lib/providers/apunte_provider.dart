@@ -22,7 +22,8 @@ class ApunteProvider extends ChangeNotifier {
 
   Future<void> addApunte(Apunte apunte) async {
     final id = await _db.insertApunte(apunte);
-    
+
+    // NUEVO: Programar notificación si tiene recordatorio
     if (apunte.recordatorioFecha != null) {
       final fecha = DateTime.parse(apunte.recordatorioFecha!);
       if (fecha.isAfter(DateTime.now())) {
@@ -31,6 +32,7 @@ class ApunteProvider extends ChangeNotifier {
           titulo: apunte.titulo,
           fecha: fecha,
         );
+        debugPrint('✅ Notificación programada para apunte ID $id: ${fecha}');
       }
     }
 
@@ -40,8 +42,10 @@ class ApunteProvider extends ChangeNotifier {
   Future<void> updateApunte(Apunte apunte) async {
     await _db.updateApunte(apunte);
 
+    // NUEVO: Cancelar notificación anterior
     await _notifications.cancelApunteNotification(apunte.id!);
 
+    // NUEVO: Reagendar si tiene recordatorio
     if (apunte.recordatorioFecha != null) {
       final fecha = DateTime.parse(apunte.recordatorioFecha!);
       if (fecha.isAfter(DateTime.now())) {
@@ -50,6 +54,7 @@ class ApunteProvider extends ChangeNotifier {
           titulo: apunte.titulo,
           fecha: fecha,
         );
+        debugPrint('✅ Notificación reprogramada para apunte ID ${apunte.id}: ${fecha}');
       }
     }
 
@@ -57,17 +62,10 @@ class ApunteProvider extends ChangeNotifier {
   }
 
   Future<void> deleteApunte(int id) async {
+    // NUEVO: Cancelar notificación al eliminar
     await _notifications.cancelApunteNotification(id);
     await _db.deleteApunte(id);
     await loadApuntes();
-  }
-
-  // NUEVO: Método para enviar una notificación de prueba
-  Future<void> sendTestNotification() async {
-    await _notifications.showInstantNotification(
-      title: '🔔 Notificación de Prueba',
-      body: 'Si ves esto, las notificaciones de la app funcionan.',
-    );
   }
 
   List<Apunte> buscar(String query) {
@@ -75,8 +73,17 @@ class ApunteProvider extends ChangeNotifier {
     final q = query.toLowerCase();
     return _apuntes
         .where((a) =>
-            a.titulo.toLowerCase().contains(q) ||
-            a.contenido.toLowerCase().contains(q))
+    a.titulo.toLowerCase().contains(q) ||
+        a.contenido.toLowerCase().contains(q))
         .toList();
+  }
+
+  // NUEVO: Método para enviar notificación de prueba
+  Future<void> sendTestNotification() async {
+    await _notifications.showInstantNotification(
+      title: '🔔 Notificación de Prueba',
+      body: 'Las notificaciones están funcionando correctamente',
+    );
+    debugPrint('✅ Notificación de prueba enviada');
   }
 }
