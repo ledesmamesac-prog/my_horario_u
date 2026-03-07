@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../models/tarea.dart';
 import '../services/database_service.dart';
 import '../services/notification_service.dart';
+import '../services/cloud_service.dart';
 
 class TareaProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
   final NotificationService _notifications = NotificationService.instance;
+  final CloudService _cloud = CloudService.instance;
   Map<int, List<Tarea>> _tareasPorMateria = {};
 
   Map<int, List<Tarea>> get tareasPorMateria => _tareasPorMateria;
@@ -17,8 +19,22 @@ class TareaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loadAllTareas() async {
+    final allTareas = await _db.getAllTareas();
+    _tareasPorMateria.clear();
+    for (var tarea in allTareas) {
+      if (_tareasPorMateria[tarea.materiaId] == null) {
+        _tareasPorMateria[tarea.materiaId] = [];
+      }
+      _tareasPorMateria[tarea.materiaId]!.add(tarea);
+    }
+    notifyListeners();
+  }
+
   Future<void> addTarea(Tarea tarea, String materiaNombre) async {
     final id = await _db.insertTarea(tarea);
+    final tareaConId = tarea.copyWith(id: id);
+    await _cloud.saveTarea(tareaConId);
 
     final fechaEntrega = DateTime.parse(tarea.fechaEntrega);
     if (fechaEntrega.isAfter(DateTime.now())) {
@@ -35,6 +51,7 @@ class TareaProvider extends ChangeNotifier {
 
   Future<void> updateTarea(Tarea tarea, String materiaNombre) async {
     await _db.updateTarea(tarea);
+    await _cloud.saveTarea(tarea);
 
     await _notifications.cancelTareaNotification(tarea.id!);
 
@@ -54,12 +71,14 @@ class TareaProvider extends ChangeNotifier {
   Future<void> toggleTareaCompletada(Tarea tarea) async {
     final tareaActualizada = tarea.copyWith(completada: !tarea.completada);
     await _db.updateTarea(tareaActualizada);
+    await _cloud.saveTarea(tareaActualizada);
     await loadTareasByMateria(tarea.materiaId);
   }
 
   Future<void> deleteTarea(int id, int materiaId) async {
     await _notifications.cancelTareaNotification(id);
     await _db.deleteTarea(id);
+    await _cloud.deleteTarea(id);
     await loadTareasByMateria(materiaId);
   }
 

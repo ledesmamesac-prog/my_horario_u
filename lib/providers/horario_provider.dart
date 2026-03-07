@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../models/horario.dart';
 import '../services/database_service.dart';
 import '../services/notification_service.dart';
+import '../services/cloud_service.dart';
 
 class HorarioProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
   final NotificationService _notifications = NotificationService.instance;
+  final CloudService _cloud = CloudService.instance;
   List<Horario> _horarios = [];
 
   List<Horario> get horarios => _horarios;
@@ -24,7 +26,9 @@ class HorarioProvider extends ChangeNotifier {
   }
 
   Future<void> addHorario(Horario horario) async {
-    await _db.insertHorario(horario);
+    final id = await _db.insertHorario(horario);
+    final horarioConId = horario.copyWith(id: id);
+    await _cloud.saveHorario(horarioConId);
     await loadHorarios();
   }
 
@@ -32,6 +36,7 @@ class HorarioProvider extends ChangeNotifier {
     // NUEVO: Cancelar notificaciones asociadas
     await _notifications.cancelClaseNotification(id);
     await _db.deleteHorario(id);
+    await _cloud.deleteHorario(id);
     await loadHorarios();
   }
 

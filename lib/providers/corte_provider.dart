@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import '../models/corte.dart';
 import '../services/database_service.dart';
+import '../services/cloud_service.dart';
 
 class CorteProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
+  final CloudService _cloud = CloudService.instance;
   Map<int, List<Corte>> _cortesPorMateria = {};
 
   Map<int, List<Corte>> get cortesPorMateria => _cortesPorMateria;
@@ -16,17 +18,21 @@ class CorteProvider extends ChangeNotifier {
   }
 
   Future<void> addCorte(Corte corte) async {
-    await _db.insertCorte(corte);
+    final id = await _db.insertCorte(corte);
+    final corteConId = corte.copyWith(id: id);
+    await _cloud.saveCorte(corteConId);
     await loadCortesByMateria(corte.materiaId);
   }
 
   Future<void> deleteCorte(int id, int materiaId) async {
     await _db.deleteCorte(id);
+    await _cloud.deleteCorte(id);
     await loadCortesByMateria(materiaId);
   }
 
   Future<void> updateCorte(Corte corte) async {
     await _db.updateCorte(corte);
+    await _cloud.saveCorte(corte);
     await loadCortesByMateria(corte.materiaId);
   }
 

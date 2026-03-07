@@ -4,10 +4,12 @@ import '../models/evaluacion.dart';
 import '../models/materia.dart';
 import '../services/database_service.dart';
 import '../services/notification_service.dart';
+import '../services/cloud_service.dart';
 
 class EvaluacionProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
   final NotificationService _notifications = NotificationService.instance;
+  final CloudService _cloud = CloudService.instance;
   Map<int, List<Evaluacion>> _evaluacionesPorCorte = {};
 
   Map<int, List<Evaluacion>> get evaluacionesPorCorte => _evaluacionesPorCorte;
@@ -20,6 +22,8 @@ class EvaluacionProvider extends ChangeNotifier {
 
   Future<void> addEvaluacion(Evaluacion evaluacion, Materia materia) async {
     final id = await _db.insertEvaluacion(evaluacion);
+    final evaluacionConId = evaluacion.copyWith(id: id);
+    await _cloud.saveEvaluacion(evaluacionConId);
 
     if (evaluacion.isPendiente && evaluacion.fecha != null) {
       final fecha = DateTime.parse(evaluacion.fecha!);
@@ -38,6 +42,7 @@ class EvaluacionProvider extends ChangeNotifier {
 
   Future<void> updateEvaluacion(Evaluacion evaluacion, Materia materia) async {
     await _db.updateEvaluacion(evaluacion);
+    await _cloud.saveEvaluacion(evaluacion);
 
     await _notifications.cancelActividadNotification(evaluacion.id!);
 
@@ -59,6 +64,7 @@ class EvaluacionProvider extends ChangeNotifier {
   Future<void> deleteEvaluacion(int id, int corteId) async {
     await _notifications.cancelActividadNotification(id);
     await _db.deleteEvaluacion(id);
+    await _cloud.deleteEvaluacion(id);
     await loadEvaluacionesByCorte(corteId);
   }
 

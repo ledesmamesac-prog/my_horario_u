@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import '../models/nota.dart';
 import '../services/database_service.dart';
+import '../services/cloud_service.dart';
 
 class NotaProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
+  final CloudService _cloud = CloudService.instance;
   Map<int, List<Nota>> _notasPorMateria = {};
 
   Map<int, List<Nota>> get notasPorMateria => _notasPorMateria;
@@ -16,17 +18,21 @@ class NotaProvider extends ChangeNotifier {
   }
 
   Future<void> addNota(Nota nota) async {
-    await _db.insertNota(nota);
+    final id = await _db.insertNota(nota);
+    final notaConId = nota.copyWith(id: id);
+    await _cloud.saveNota(notaConId);
     await loadNotasByMateria(nota.materiaId);
   }
 
   Future<void> deleteNota(int id, int materiaId) async {
     await _db.deleteNota(id);
+    await _cloud.deleteNota(id);
     await loadNotasByMateria(materiaId);
   }
 
   Future<void> updateNota(Nota nota) async {
     await _db.updateNota(nota);
+    await _cloud.saveNota(nota);
     await loadNotasByMateria(nota.materiaId);
   }
 

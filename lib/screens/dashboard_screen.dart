@@ -12,6 +12,7 @@ import '../screens/qr_screen.dart';
 import 'dart:async';
 import '../models/horario.dart';
 import '../theme/app_theme.dart'; // NUEVO IMPORT
+import '../services/auth_service.dart'; // NUEVO import
 import 'settings_screen.dart'; // NUEVO import
 
 class DashboardScreen extends StatelessWidget {
@@ -34,14 +35,24 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const CircleAvatar(
-                backgroundColor: AppColors.moradoClaro,
-                radius: 18,
-                child: Icon(
-                  Icons.person_rounded,
-                  color: AppColors.moradoPrincipal,
-                  size: 20,
-                ),
+              child: Consumer<AuthService>(
+                builder: (context, auth, _) {
+                  final user = auth.currentUser;
+                  return CircleAvatar(
+                    backgroundColor: AppColors.moradoClaro,
+                    radius: 18,
+                    backgroundImage: user?.photoURL != null 
+                        ? NetworkImage(user!.photoURL!) 
+                        : null,
+                    child: user?.photoURL == null 
+                        ? const Icon(
+                            Icons.person_rounded,
+                            color: AppColors.moradoPrincipal,
+                            size: 20,
+                          )
+                        : null,
+                  );
+                },
               ),
             ),
           ),

@@ -33,4 +33,20 @@ class Nota {
       notaObtenida: map['notaObtenida'],
     );
   }
+
+  Nota copyWith({
+    int? id,
+    int? materiaId,
+    String? tipo,
+    double? porcentaje,
+    double? notaObtenida,
+  }) {
+    return Nota(
+      id: id ?? this.id,
+      materiaId: materiaId ?? this.materiaId,
+      tipo: tipo ?? this.tipo,
+      porcentaje: porcentaje ?? this.porcentaje,
+      notaObtenida: notaObtenida ?? this.notaObtenida,
+    );
+  }
 }

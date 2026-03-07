@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "595660528117",
+    "project_id": "my-horario-u",
+    "storage_bucket": "my-horario-u.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595660528117:android:87d9ad7d06f9789cfda8bc",
+        "android_client_info": {
+          "package_name": "com.example.my_horario_u"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "595660528117-fg6k0bl4go6fbbdsclrfo1gek309aboh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.my_horario_u",
+            "certificate_hash": "a017e93ae13af669457b04caf8b075ed766a6f04"
+          }
+        },
+        {
+          "client_id": "595660528117-fuitb25j1epnorii6700gp7e7uqdvlcc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARCHKtcKIEB0aUdR8DtDZfymx_iXYwCUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "595660528117-fuitb25j1epnorii6700gp7e7uqdvlcc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "595660528117-ujjv9i7rbtraaon5mr2br57ho44dhmb8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.myHorariou"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

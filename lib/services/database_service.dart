@@ -120,7 +120,7 @@ class DatabaseService {
   // ── MATERIAS ──────────────────────────────────────────────────────────────
   Future<int> insertMateria(Materia materia) async {
     final db = await database;
-    return await db.insert('materias', materia.toMap());
+    return await db.insert('materias', materia.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Materia>> getMaterias() async {
@@ -143,7 +143,7 @@ class DatabaseService {
   // ── HORARIOS ──────────────────────────────────────────────────────────────
   Future<int> insertHorario(Horario horario) async {
     final db = await database;
-    return await db.insert('horarios', horario.toMap());
+    return await db.insert('horarios', horario.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Horario>> getHorarios() async {
@@ -160,7 +160,7 @@ class DatabaseService {
   // ── NOTAS ─────────────────────────────────────────────────────────────────
   Future<int> insertNota(Nota nota) async {
     final db = await database;
-    return await db.insert('notas', nota.toMap());
+    return await db.insert('notas', nota.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Nota>> getNotasByMateria(int materiaId) async {
@@ -184,7 +184,7 @@ class DatabaseService {
   // ── CORTES ────────────────────────────────────────────────────────────────
   Future<int> insertCorte(Corte corte) async {
     final db = await database;
-    return await db.insert('cortes', corte.toMap());
+    return await db.insert('cortes', corte.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Corte>> getCortesByMateria(int materiaId) async {
@@ -208,7 +208,7 @@ class DatabaseService {
   // ── EVALUACIONES ──────────────────────────────────────────────────────────
   Future<int> insertEvaluacion(Evaluacion evaluacion) async {
     final db = await database;
-    return await db.insert('evaluaciones', evaluacion.toMap());
+    return await db.insert('evaluaciones', evaluacion.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Evaluacion>> getEvaluacionesByCorte(int corteId) async {
@@ -232,7 +232,7 @@ class DatabaseService {
   // ── TAREAS ────────────────────────────────────────────────────────────────
   Future<int> insertTarea(Tarea tarea) async {
     final db = await database;
-    return await db.insert('tareas', tarea.toMap());
+    return await db.insert('tareas', tarea.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Tarea>> getTareasByMateria(int materiaId) async {
@@ -264,7 +264,7 @@ class DatabaseService {
   // ── APUNTES ───────────────────────────────────────────────────────────────
   Future<int> insertApunte(Apunte apunte) async {
     final db = await database;
-    return await db.insert('apuntes', apunte.toMap());
+    return await db.insert('apuntes', apunte.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Apunte>> getApuntes() async {

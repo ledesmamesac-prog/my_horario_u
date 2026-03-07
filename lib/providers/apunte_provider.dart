@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../models/apunte.dart';
 import '../services/database_service.dart';
 import '../services/notification_service.dart';
+import '../services/cloud_service.dart';
 
 class ApunteProvider extends ChangeNotifier {
   final DatabaseService _db = DatabaseService.instance;
   final NotificationService _notifications = NotificationService.instance;
+  final CloudService _cloud = CloudService.instance;
   List<Apunte> _apuntes = [];
 
   List<Apunte> get apuntes => _apuntes;
@@ -22,6 +24,8 @@ class ApunteProvider extends ChangeNotifier {
 
   Future<void> addApunte(Apunte apunte) async {
     final id = await _db.insertApunte(apunte);
+    final apunteConId = apunte.copyWith(id: id);
+    await _cloud.saveApunte(apunteConId);
 
     // NUEVO: Programar notificación si tiene recordatorio
     if (apunte.recordatorioFecha != null) {
@@ -41,6 +45,7 @@ class ApunteProvider extends ChangeNotifier {
 
   Future<void> updateApunte(Apunte apunte) async {
     await _db.updateApunte(apunte);
+    await _cloud.saveApunte(apunte);
 
     // NUEVO: Cancelar notificación anterior
     await _notifications.cancelApunteNotification(apunte.id!);
@@ -65,6 +70,7 @@ class ApunteProvider extends ChangeNotifier {
     // NUEVO: Cancelar notificación al eliminar
     await _notifications.cancelApunteNotification(id);
     await _db.deleteApunte(id);
+    await _cloud.deleteApunte(id);
     await loadApuntes();
   }
 

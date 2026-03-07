@@ -41,4 +41,24 @@ class Horario {
       modalidad: map['modalidad'],
     );
   }
+
+  Horario copyWith({
+    int? id,
+    int? materiaId,
+    int? diaSemana,
+    String? horaInicio,
+    String? horaFin,
+    String? aula,
+    String? modalidad,
+  }) {
+    return Horario(
+      id: id ?? this.id,
+      materiaId: materiaId ?? this.materiaId,
+      diaSemana: diaSemana ?? this.diaSemana,
+      horaInicio: horaInicio ?? this.horaInicio,
+      horaFin: horaFin ?? this.horaFin,
+      aula: aula ?? this.aula,
+      modalidad: modalidad ?? this.modalidad,
+    );
+  }
 }
