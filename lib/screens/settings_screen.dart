@@ -19,8 +19,8 @@ class SettingsScreen extends StatelessWidget {
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           final esOscuro = themeProvider.themeMode == ThemeMode.dark ||
-                           (themeProvider.themeMode == ThemeMode.system && 
-                            MediaQuery.of(context).platformBrightness == Brightness.dark);
+              (themeProvider.themeMode == ThemeMode.system &&
+                  MediaQuery.of(context).platformBrightness == Brightness.dark);
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -51,12 +51,18 @@ class SettingsScreen extends StatelessWidget {
                   secondary: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: esOscuro ? AppColors.moradoOscuro : AppColors.moradoClaro,
+                      color: esOscuro
+                          ? AppColors.moradoOscuro
+                          : AppColors.moradoClaro,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      esOscuro ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                      color: esOscuro ? AppColors.textoBlanco : AppColors.moradoPrincipal,
+                      esOscuro
+                          ? Icons.dark_mode_rounded
+                          : Icons.light_mode_rounded,
+                      color: esOscuro
+                          ? AppColors.textoBlanco
+                          : AppColors.moradoPrincipal,
                     ),
                   ),
                   value: esOscuro,
@@ -88,34 +94,49 @@ class SettingsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.person_outline_rounded, color: AppColors.moradoPrincipal),
-                      title: const Text('Mi Perfil y QR', style: TextStyle(fontWeight: FontWeight.w600)),
+                      leading: const Icon(Icons.person_outline_rounded,
+                          color: AppColors.moradoPrincipal),
+                      title: const Text('Mi Perfil y QR',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: const Text('Ver mi info y código compartido'),
                       trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ProfileScreen())),
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.qr_code_scanner_rounded, color: AppColors.moradoPrincipal),
-                      title: const Text('Escanear Amigo', style: TextStyle(fontWeight: FontWeight.w600)),
+                      leading: const Icon(Icons.qr_code_scanner_rounded,
+                          color: AppColors.moradoPrincipal),
+                      title: const Text('Escanear Amigo',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: const Text('Agregar a un compañero por QR'),
                       trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScannerScreen())),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ScannerScreen())),
                     ),
                     const Divider(height: 1),
                     ListTile(
-                      leading: const Icon(Icons.people_outline_rounded, color: AppColors.moradoPrincipal),
-                      title: const Text('Mis Amigos', style: TextStyle(fontWeight: FontWeight.w600)),
+                      leading: const Icon(Icons.people_outline_rounded,
+                          color: AppColors.moradoPrincipal),
+                      title: const Text('Mis Amigos',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: const Text('Ver lista y comparar horarios'),
                       trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FriendsListScreen())),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const FriendsListScreen())),
                     ),
                   ],
                 ),
               ),
 
               const SizedBox(height: 24),
-              
+
               // Sección Cuenta
               const Padding(
                 padding: EdgeInsets.only(left: 8, bottom: 8),
@@ -131,8 +152,12 @@ class SettingsScreen extends StatelessWidget {
               ),
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-                  title: const Text('Cerrar Sesión', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.redAccent)),
+                  leading:
+                      const Icon(Icons.logout_rounded, color: Colors.redAccent),
+                  title: const Text('Cerrar Sesión',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.redAccent)),
                   onTap: () {
                     context.read<AuthService>().signOut();
                     Navigator.pop(context); // Volver al AuthWrapper
@@ -141,7 +166,7 @@ class SettingsScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Sección de Acerca de
               const Padding(
                 padding: EdgeInsets.only(left: 8, bottom: 8),
@@ -163,10 +188,13 @@ class SettingsScreen extends StatelessWidget {
                       color: AppColors.fondoSurface,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.info_outline_rounded, color: AppColors.textoMedio),
+                    child: const Icon(Icons.info_outline_rounded,
+                        color: AppColors.textoMedio),
                   ),
-                  title: const Text('Versión', style: TextStyle(fontWeight: FontWeight.w600)),
-                  trailing: const Text('1.0.0', style: TextStyle(color: AppColors.textoClaro)),
+                  title: const Text('Versión',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  trailing: const Text('3.5.0',
+                      style: TextStyle(color: AppColors.textoClaro)),
                 ),
               ),
             ],
