@@ -53,6 +53,14 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+
+            // Desactivar minificación/obfuscación para evitar pantalla negra
+            // causada por R8 eliminando clases nativas de los plugins
+            minifyEnabled false
+            shrinkResources false
+
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                'proguard-rules.pro'
         }
     }
 }

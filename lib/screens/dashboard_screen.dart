@@ -9,7 +9,10 @@ import '../providers/nota_provider.dart';
 import '../providers/corte_provider.dart';
 import '../providers/evaluacion_provider.dart';
 import '../screens/qr_screen.dart';
+import 'dart:async';
+import '../models/horario.dart';
 import '../theme/app_theme.dart'; // NUEVO IMPORT
+import 'settings_screen.dart'; // NUEVO import
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -22,13 +25,23 @@ class DashboardScreen extends StatelessWidget {
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
-            child: const CircleAvatar(
-              backgroundColor: AppColors.moradoClaro,
-              radius: 18,
-              child: Icon(
-                Icons.person_rounded,
-                color: AppColors.moradoPrincipal,
-                size: 20,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SettingsScreen(),
+                  ),
+                );
+              },
+              child: const CircleAvatar(
+                backgroundColor: AppColors.moradoClaro,
+                radius: 18,
+                child: Icon(
+                  Icons.person_rounded,
+                  color: AppColors.moradoPrincipal,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -47,6 +60,7 @@ class DashboardScreen extends StatelessWidget {
         builder: (context, materiaProvider, horarioProvider, notaProvider,
             corteProvider, evaluacionProvider, _) {
           final materias = materiaProvider.materias;
+          final claseActual = horarioProvider.getClaseActual();
           final proximaClase = horarioProvider.getProximaClase();
 
           double promedioGeneral = 0;
@@ -81,14 +95,22 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 _buildPromedioCard(promedioGeneral),
                 const SizedBox(height: 16),
-                if (proximaClase != null)
+                if (claseActual != null) ...[
+                  _ClaseActualCard(horario: claseActual, materiaProvider: materiaProvider),
+                  const SizedBox(height: 16),
+                ] else if (proximaClase != null) ...[
                   _buildProximaClaseCard(
                       context, proximaClase, materiaProvider),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                ],
                 _buildAlertasCard(materias, corteProvider, evaluacionProvider),
                 const SizedBox(height: 16),
                 _buildMateriasResumen(
-                    materias, corteProvider, evaluacionProvider),
+                  context,
+                  materias,
+                  corteProvider,
+                  evaluacionProvider,
+                ),
                 const SizedBox(height: 80),
               ],
             ),
@@ -110,7 +132,7 @@ class DashboardScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.moradoPrincipal.withOpacity(0.3),
+            color: AppColors.moradoPrincipal.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -165,12 +187,14 @@ class DashboardScreen extends StatelessWidget {
     final materia = mp.getMateriaById(horario.materiaId);
     if (materia == null) return const SizedBox();
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.acentoClaro,
+        color: isDark ? Theme.of(context).colorScheme.surface : AppColors.acentoClaro,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.acento.withOpacity(0.3)),
+        border: Border.all(color: isDark ? Theme.of(context).colorScheme.outline : AppColors.acento.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -188,21 +212,21 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('PRÓXIMA CLASE',
+                Text('PRÓXIMA CLASE',
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1,
-                        color: AppColors.acentoOscuro)),
+                        color: isDark ? const Color(0xFFC7B1F3) : AppColors.acentoOscuro)),
                 const SizedBox(height: 4),
                 Text(materia.nombre,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textoOscuro)),
+                        color: Theme.of(context).colorScheme.onSurface)),
                 Text(
                   '${_convertirA12H(horario.horaInicio)} · ${horario.aula}',
-                  style: const TextStyle(
-                      color: AppColors.textoMedio, fontSize: 13),
+                  style: TextStyle(
+                      color: isDark ? Colors.white60 : AppColors.textoMedio, fontSize: 13),
                 ),
               ],
             ),
@@ -263,7 +287,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildMateriasResumen(
-      List materias, CorteProvider cp, EvaluacionProvider ep) {
+      BuildContext context, List materias, CorteProvider cp, EvaluacionProvider ep) {
     if (materias.isEmpty) {
       return const Card(
         child: Padding(
@@ -284,6 +308,7 @@ class DashboardScreen extends StatelessWidget {
                 letterSpacing: 1)),
         const SizedBox(height: 12),
         ...materias.map((materia) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
           final cortes = cp.getCortesByMateria(materia.id!);
           double pm = 0;
           for (var c in cortes) {
@@ -299,12 +324,12 @@ class DashboardScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.fondoCard,
+              color: isDark ? Theme.of(context).colorScheme.surface : AppColors.fondoCard,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.borde),
+              border: Border.all(color: isDark ? Theme.of(context).colorScheme.outline : AppColors.borde),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -326,12 +351,12 @@ class DashboardScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(materia.nombre,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textoOscuro)),
+                              color: Theme.of(context).colorScheme.onSurface)),
                       Text('${materia.profesor} · ${materia.creditos} créditos',
-                          style: const TextStyle(
-                              color: AppColors.textoClaro, fontSize: 12)),
+                          style: TextStyle(
+                              color: isDark ? Colors.white60 : AppColors.textoClaro, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -381,7 +406,7 @@ class DashboardScreen extends StatelessWidget {
       case 'perdiendo':
         return AppColors.peligro;
       default:
-        return AppColors.textoClaro;
+        return Colors.grey;
     }
   }
 
@@ -396,5 +421,146 @@ class DashboardScreen extends StatelessWidget {
       default:
         return AppColors.fondoSurface;
     }
+  }
+}
+
+class _ClaseActualCard extends StatefulWidget {
+  final Horario horario;
+  final MateriaProvider materiaProvider;
+
+  const _ClaseActualCard({
+    required this.horario,
+    required this.materiaProvider,
+  });
+
+  @override
+  State<_ClaseActualCard> createState() => _ClaseActualCardState();
+}
+
+class _ClaseActualCardState extends State<_ClaseActualCard> {
+  late Timer _timer;
+  Duration _tiempoRestante = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _calcularTiempoRestante();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _calcularTiempoRestante();
+    });
+  }
+
+  void _calcularTiempoRestante() {
+    final partesParseadas = widget.horario.horaFin.split(':');
+    final horaFin = int.parse(partesParseadas[0]);
+    final minFin = int.parse(partesParseadas[1]);
+
+    final ahora = DateTime.now();
+    final fechaFin = DateTime(ahora.year, ahora.month, ahora.day, horaFin, minFin);
+
+    setState(() {
+      _tiempoRestante = fechaFin.difference(ahora);
+      if (_tiempoRestante.isNegative) {
+        _tiempoRestante = Duration.zero;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    if (d.inSeconds <= 0) return "Terminando...";
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    final hours = twoDigits(d.inHours);
+    final minutes = twoDigits(d.inMinutes.remainder(60));
+    final seconds = twoDigits(d.inSeconds.remainder(60));
+    return d.inHours > 0 ? "$hours:$minutes:$seconds" : "$minutes:$seconds";
+  }
+
+  String _convertirA12H(BuildContext context, String hora24) {
+    final parts = hora24.split(':');
+    int hour = int.parse(parts[0]);
+    final minute = parts[1];
+    final period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    return "$hour:$minute $period";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final materia = widget.materiaProvider.getMateriaById(widget.horario.materiaId);
+    if (materia == null) return const SizedBox();
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF431407) : AppColors.peligroFondo,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? const Color(0xFF7B2A18) : AppColors.peligro.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.peligro,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.play_circle_fill_rounded,
+                color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('EN CURSO',
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                            color: isDark ? const Color(0xFFFCA5A5) : AppColors.peligro)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.peligro,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _formatDuration(_tiempoRestante),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(materia.nombre,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).colorScheme.onSurface)),
+                Text(
+                  'Termina a las ${_convertirA12H(context, widget.horario.horaFin)} · ${widget.horario.aula}',
+                  style: TextStyle(
+                      color: isDark ? Colors.white60 : AppColors.textoMedio, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

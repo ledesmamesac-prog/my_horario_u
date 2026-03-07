@@ -102,14 +102,16 @@ class _TareasSectionState extends State<TareasSection> {
         final diasRestantes = fechaEntrega.difference(DateTime.now()).inDays;
         final esUrgente = diasRestantes <= 2 && !tarea.completada;
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: tarea.completada
-                ? AppColors.exitoFondo
+                ? (isDark ? const Color(0xFF0F3D21) : AppColors.exitoFondo)
                 : esUrgente
-                    ? AppColors.peligroFondo
-                    : AppColors.fondoCard,
+                    ? (isDark ? const Color(0xFF431407) : AppColors.peligroFondo)
+                    : (isDark ? Theme.of(context).colorScheme.surface : AppColors.fondoCard),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: tarea.completada
@@ -152,7 +154,7 @@ class _TareasSectionState extends State<TareasSection> {
                                   ? TextDecoration.lineThrough
                                   : null,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textoOscuro,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           if (tarea.descripcion.isNotEmpty) ...[
@@ -263,7 +265,7 @@ class _TareasSectionState extends State<TareasSection> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          backgroundColor: AppColors.fondoCard,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           title: Text(tarea == null ? 'NUEVA TAREA' : 'EDITAR TAREA'),
           content: SingleChildScrollView(
             child: Column(
@@ -379,7 +381,7 @@ class _TareasSectionState extends State<TareasSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.fondoCard,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('CONFIRMAR'),
         content: Text('¿Eliminar la tarea "${tarea.titulo}"?'),
         actions: [

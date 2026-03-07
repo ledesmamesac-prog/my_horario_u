@@ -43,23 +43,27 @@ class NotificationService {
   }
 
   Future<void> _requestPermissions() async {
-    // Android
     final android = _notifications
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     if (android != null) {
+      // Permiso básico de notificaciones (Android 13+)
       final granted = await android.requestNotificationsPermission();
-      debugPrint('📱 Notificaciones básicas: ${granted == true ? "✅" : "❌"}');
+      debugPrint('📱 Notificaciones: ${granted == true ? "✅" : "❌"}');
 
-      // NUEVO: Solicitar permiso de alarmas exactas (Android 12+)
-      if (await Permission.scheduleExactAlarm.isDenied) {
-        final status = await Permission.scheduleExactAlarm.request();
-        debugPrint('⏰ Alarmas exactas: ${status.isGranted ? "✅" : "❌"}');
+      // Permiso de alarmas exactas (Android 12+)
+      // USE_EXACT_ALARM y SCHEDULE_EXACT_ALARM están en el manifest
+      // pero en Android 12 se debe verificar en runtime
+      final alarmStatus = await Permission.scheduleExactAlarm.status;
+      debugPrint('⏰ Estado alarmas exactas: $alarmStatus');
 
-        if (status.isDenied) {
-          debugPrint('⚠️ ADVERTENCIA: Alarmas exactas denegadas. Abre configuración manualmente.');
+      if (alarmStatus.isDenied) {
+        final result = await Permission.scheduleExactAlarm.request();
+        debugPrint('⏰ Alarmas exactas tras solicitud: ${result.isGranted ? "✅" : "❌"}');
+        if (result.isDenied || result.isPermanentlyDenied) {
+          debugPrint('⚠️ Sin permiso de alarmas exactas. Las notificaciones pueden llegar tarde.');
         }
-      } else {
+      } else if (alarmStatus.isGranted) {
         debugPrint('⏰ Alarmas exactas: ✅ Ya concedidas');
       }
     }
@@ -106,7 +110,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
       );
 
       debugPrint('✅ Notificación apunte programada: ID=$id, $tzFecha');
@@ -164,7 +168,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
       );
 
       debugPrint('✅ Notificación clase programada: ID=$id, $tzScheduled');
@@ -228,7 +232,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
       );
 
       debugPrint('✅ Notificación tarea programada: ID=${id + 10000}, $tzScheduled');
@@ -286,7 +290,7 @@ class NotificationService {
         ),
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
       );
 
       debugPrint('✅ Notificación actividad programada: ID=${id + 20000}, $tzScheduled');

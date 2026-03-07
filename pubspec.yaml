@@ -16,7 +16,7 @@ dependencies:
   intl: ^0.18.1
   flutter_colorpicker: ^1.0.3
   qr_flutter: ^4.1.0
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.5.4
   table_calendar: ^3.0.9
   flutter_local_notifications: ^17.2.3
   timezone: ^0.9.4

@@ -1,7 +1,6 @@
 // file: lib/screens/horario_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 import '../models/horario.dart';
 import '../providers/horario_provider.dart';
 import '../providers/materia_provider.dart';
@@ -215,7 +214,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
           padding: const EdgeInsets.all(16),
           itemCount: fechasOrdenadas.length,
           itemBuilder: (context, index) {
-            final fecha = fechasOrdenadas[index] as DateTime;
+            final fecha = fechasOrdenadas[index];
             final tareas = tareasMes[fecha]!;
 
             return Card(
@@ -226,7 +225,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.fondoCard,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius:
                           const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
@@ -329,7 +328,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
                         decoration: BoxDecoration(
                           color: esHoy
                               ? AppColors.moradoPrincipal
-                              : AppColors.fondoSurface,
+                              : Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
@@ -337,7 +336,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
                             dia,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: esHoy ? Colors.white : AppColors.textoMedio,
+                              color: esHoy ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textoMedio),
                               fontSize: 13,
                             ),
                           ),
@@ -365,7 +364,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          right: BorderSide(color: AppColors.borde, width: 1),
+          right: BorderSide(color: Theme.of(context).colorScheme.outline, width: 1),
         ),
       ),
       child: Stack(
@@ -379,7 +378,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                              color: AppColors.borde.withOpacity(0.5),
+                              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                               width: 1),
                         ),
                       ),
@@ -436,17 +435,17 @@ class _HorarioScreenState extends State<HorarioScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '${_convertirA12H(horario.horaInicio)}–${_convertirA12H(horario.horaFin)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 9,
-                            color: AppColors.textoMedio,
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textoMedio,
                           ),
                         ),
                         if (horario.aula.isNotEmpty)
                           Text(
                             horario.aula,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 9,
-                              color: AppColors.textoMedio,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textoMedio,
                             ),
                           ),
                       ],
@@ -560,9 +559,9 @@ class _HorarioScreenState extends State<HorarioScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => Container(
-          decoration: const BoxDecoration(
-            color: AppColors.fondoCard,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: EdgeInsets.only(
             left: 24,
@@ -580,17 +579,17 @@ class _HorarioScreenState extends State<HorarioScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.borde,
+                      color: Theme.of(context).colorScheme.outline,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text('Nuevo Horario',
+                Text('Nuevo Horario',
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textoOscuro)),
+                        color: Theme.of(context).colorScheme.onSurface)),
                 const SizedBox(height: 20),
 
                 DropdownButtonFormField<int>(
@@ -733,7 +732,7 @@ class _HorarioScreenState extends State<HorarioScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.fondoCard,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: const Text('CONFIRMAR'),
         content: const Text('¿Eliminar este horario?'),
         actions: [

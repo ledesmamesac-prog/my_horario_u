@@ -226,4 +226,157 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      fontFamily: 'sans-serif',
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.moradoMedio, // Ligeramente más claro para dark mode
+        onPrimary: AppColors.textoBlanco,
+        primaryContainer: Color(0xFF3B0764), // Morado muy oscuro
+        onPrimaryContainer: AppColors.moradoClaro,
+        secondary: AppColors.acento,
+        onSecondary: AppColors.textoBlanco,
+        secondaryContainer: Color(0xFF164E63), // Cyan oscuro
+        onSecondaryContainer: AppColors.acentoClaro,
+        surface: Color(0xFF1E293B), // Slate 800 - Cards
+        onSurface: AppColors.textoBlanco,
+        background: Color(0xFF0F172A), // Slate 900 - Fondo principal
+        onBackground: AppColors.textoBlanco,
+        error: AppColors.peligro,
+        onError: AppColors.textoBlanco,
+        outline: Color(0xFF334155), // Slate 700 - Bordes
+      ),
+      scaffoldBackgroundColor: const Color(0xFF0F172A),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF0F172A),
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        centerTitle: false,
+        iconTheme: IconThemeData(color: AppColors.moradoMedio),
+        titleTextStyle: TextStyle(
+          color: AppColors.textoBlanco,
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+        ),
+        surfaceTintColor: Colors.transparent,
+      ),
+      cardTheme: CardThemeData(
+        color: const Color(0xFF1E293B),
+        elevation: 0,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFF334155), width: 1),
+        ),
+        margin: EdgeInsets.zero,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.moradoMedio,
+          foregroundColor: AppColors.textoBlanco,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.moradoClaro,
+          side: const BorderSide(color: AppColors.moradoMedio, width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.moradoClaro,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.moradoMedio,
+        foregroundColor: AppColors.textoBlanco,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF0F172A),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF334155)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF334155)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.moradoMedio, width: 2),
+        ),
+        labelStyle: const TextStyle(color: AppColors.textoClaro),
+        hintStyle: const TextStyle(color: Color(0xFF475569)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1E293B),
+        selectedItemColor: AppColors.moradoMedio,
+        unselectedItemColor: AppColors.textoClaro,
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle:
+            TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontSize: 11),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFF334155),
+        selectedColor: const Color(0xFF4C1D95),
+        labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textoBlanco),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFF334155),
+        thickness: 1,
+        space: 1,
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return AppColors.moradoMedio;
+          }
+          return const Color(0xFF334155);
+        }),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+      ),
+    );
+  }
 }

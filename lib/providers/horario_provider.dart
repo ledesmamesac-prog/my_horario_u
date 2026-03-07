@@ -39,6 +39,20 @@ class HorarioProvider extends ChangeNotifier {
     return _horarios.where((h) => h.diaSemana == dia).toList();
   }
 
+  Horario? getClaseActual() {
+    final ahora = DateTime.now();
+    final diaActual = ahora.weekday;
+    final horaActual = '${ahora.hour.toString().padLeft(2, '0')}:${ahora.minute.toString().padLeft(2, '0')}';
+
+    final clasesHoy = getHorariosByDia(diaActual);
+    for (var h in clasesHoy) {
+      if (h.horaInicio.compareTo(horaActual) <= 0 && h.horaFin.compareTo(horaActual) > 0) {
+        return h;
+      }
+    }
+    return null;
+  }
+
   Horario? getProximaClase() {
     final ahora = DateTime.now();
     final diaActual = ahora.weekday;
@@ -67,8 +81,11 @@ class HorarioProvider extends ChangeNotifier {
     return null;
   }
 
-  // NUEVO: Programar notificaciones para todas las clases de la semana
-  Future<void> scheduleClassNotifications() async {
+  // Programar notificaciones para todas las clases de la semana
+  // [materiaNames]: mapa de materiaId → nombre, para mostrar el nombre real en la notif
+  Future<void> scheduleClassNotifications({
+    Map<int, String> materiaNames = const {},
+  }) async {
     final ahora = DateTime.now();
 
     // Recorrer los próximos 7 días
@@ -79,14 +96,19 @@ class HorarioProvider extends ChangeNotifier {
       final clasesDelDia = getHorariosByDia(dia);
 
       for (var horario in clasesDelDia) {
-        await _scheduleNotificationForClass(horario, fecha);
+        final nombreMateria = materiaNames[horario.materiaId] ?? 'Clase';
+        await _scheduleNotificationForClass(horario, fecha, nombreMateria);
       }
     }
 
     debugPrint('✅ Notificaciones de clases programadas para la semana');
   }
 
-  Future<void> _scheduleNotificationForClass(Horario horario, DateTime fecha) async {
+  Future<void> _scheduleNotificationForClass(
+    Horario horario,
+    DateTime fecha,
+    String nombreMateria,
+  ) async {
     try {
       // Parsear hora de inicio
       final parts = horario.horaInicio.split(':');
@@ -102,43 +124,35 @@ class HorarioProvider extends ChangeNotifier {
         minute,
       );
 
-      // Solo programar si es en el futuro
+      // Solo programar si la clase es en el futuro
       if (claseDateTime.isBefore(DateTime.now())) {
         return;
       }
 
-      // Notificación 30 minutos antes
+      // Una sola notificación: 30 minutos antes
       final notif30min = claseDateTime.subtract(const Duration(minutes: 30));
       if (notif30min.isAfter(DateTime.now())) {
+        // ID estable: basado en el horario y el día de la semana (no colisiona)
+        final notifId = 30000 + (horario.id! * 10) + fecha.weekday;
         await _notifications.scheduleClaseNotification(
-          id: horario.id! * 100, // ID único para 30 min
-          materiaNombre: 'Próxima clase', // Se completa en el provider de materias
+          id: notifId,
+          materiaNombre: nombreMateria,
           fechaHora: claseDateTime,
           aula: horario.aula,
         );
-        debugPrint('✅ Notificación 30min programada: ${horario.id} - $notif30min');
-      }
-
-      // Notificación 60 minutos antes
-      final notif60min = claseDateTime.subtract(const Duration(minutes: 60));
-      if (notif60min.isAfter(DateTime.now())) {
-        await _notifications.scheduleClaseNotification(
-          id: horario.id! * 1000, // ID único para 60 min
-          materiaNombre: 'Clase en 1 hora',
-          fechaHora: claseDateTime,
-          aula: horario.aula,
-        );
-        debugPrint('✅ Notificación 60min programada: ${horario.id} - $notif60min');
+        debugPrint('✅ Notif clase 30min: $nombreMateria - ${horario.aula} - $notif30min');
       }
     } catch (e) {
-      debugPrint('❌ Error programando notificación: $e');
+      debugPrint('❌ Error programando notificación de clase: $e');
     }
   }
 
-  // NUEVO: Método manual para reprogramar notificaciones
-  Future<void> reprogramarNotificaciones() async {
+  // Cancelar todas y reprogramar con nombres actualizados
+  Future<void> reprogramarNotificaciones({
+    Map<int, String> materiaNames = const {},
+  }) async {
     await _notifications.cancelAllNotifications();
-    await scheduleClassNotifications();
+    await scheduleClassNotifications(materiaNames: materiaNames);
     debugPrint('✅ Todas las notificaciones reprogramadas');
   }
 }

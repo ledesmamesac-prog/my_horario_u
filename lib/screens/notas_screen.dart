@@ -1,6 +1,5 @@
 // file: lib/screens/notas_screen.dart
 import 'package:flutter/material.dart';
-import 'package:my_horario_u/models/materia.dart';
 import 'package:provider/provider.dart';
 import '../models/corte.dart';
 import '../models/evaluacion.dart';
@@ -78,9 +77,9 @@ class _NotasScreenState extends State<NotasScreen> {
           // HEADER CON SELECTOR Y PROMEDIO
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: AppColors.fondoCard,
-              border: Border(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              border: const Border(
                 bottom: BorderSide(color: AppColors.moradoPrincipal),
               ),
             ),
@@ -89,11 +88,11 @@ class _NotasScreenState extends State<NotasScreen> {
                 DropdownButton<int>(
                   value: selectedMateriaId,
                   isExpanded: true,
-                  dropdownColor: AppColors.fondoCard,
+                  dropdownColor: Theme.of(context).colorScheme.surface,
                   items: materias.map((m) {
                     return DropdownMenuItem(
                       value: m.id,
-                      child: Text(m.nombre),
+                      child: Text(m.nombre, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                     );
                   }).toList(),
                   onChanged: (val) {
@@ -107,7 +106,7 @@ class _NotasScreenState extends State<NotasScreen> {
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.riesgoClaro,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF431407) : AppColors.riesgoClaro,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.orange),
                     ),
@@ -210,10 +209,6 @@ class _NotasScreenState extends State<NotasScreen> {
     );
   }
 
-  // file: lib/screens/notas_screen.dart
-// MANTENER TODOS LOS IMPORTS Y CÓDIGO ANTERIOR
-
-// REEMPLAZAR COMPLETAMENTE ESTE MÉTODO:
   Widget _buildCorteCard(BuildContext context, Corte corte,
       EvaluacionProvider evaluacionProvider) {
     evaluacionProvider.loadEvaluacionesByCorte(corte.id!);
@@ -245,7 +240,7 @@ class _NotasScreenState extends State<NotasScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.moradoClaro,
+                color: Theme.of(context).brightness == Brightness.dark ? AppColors.moradoPrincipal.withValues(alpha: 0.2) : AppColors.moradoClaro,
                 borderRadius: BorderRadius.circular(8),
                 border: const Border.fromBorderSide(
                   BorderSide(color: AppColors.moradoPrincipal, width: 1.5),
@@ -289,7 +284,7 @@ class _NotasScreenState extends State<NotasScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.riesgoClaro,
+                            color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF431407) : AppColors.riesgoClaro,
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: Colors.orange),
                           ),
@@ -354,7 +349,6 @@ class _NotasScreenState extends State<NotasScreen> {
     );
   }
 
-// REEMPLAZAR COMPLETAMENTE ESTE MÉTODO:
   void _showEvaluacionDialog(BuildContext context,
       {required Corte corte, Evaluacion? evaluacion}) {
     final tipoController = TextEditingController(text: evaluacion?.tipo ?? '');
@@ -393,7 +387,7 @@ class _NotasScreenState extends State<NotasScreen> {
                     padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.moradoPrincipal.withAlpha(26),
+                      color: Theme.of(context).brightness == Brightness.dark ? AppColors.moradoPrincipal.withValues(alpha: 0.2) : AppColors.moradoPrincipal.withAlpha(26),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -445,10 +439,11 @@ class _NotasScreenState extends State<NotasScreen> {
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                         builder: (context, child) {
                           return Theme(
-                            data: ThemeData.dark().copyWith(
-                              colorScheme: const ColorScheme.dark(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: Theme.of(context).colorScheme.copyWith(
                                 primary: AppColors.moradoPrincipal,
-                                onSurface: Colors.white,
+                                onPrimary: Colors.white,
+                                onSurface: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             child: child!,
@@ -526,17 +521,22 @@ class _NotasScreenState extends State<NotasScreen> {
                   estado: esActividadFutura ? 'Pendiente' : 'Calificada',
                 );
 
+                if (materia == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Error: materia no encontrada')),
+                  );
+                  return;
+                }
+
                 if (evaluacion == null) {
-                  // CORREGIDO: Agregar segundo parámetro
                   context.read<EvaluacionProvider>().addEvaluacion(
-                        nuevaEvaluacion,
-                        (materia?.nombre ?? 'Materia')
-                            as Materia, // SEGUNDO PARÁMETRO
-                      );
+                    nuevaEvaluacion,
+                    materia,
+                  );
                 } else {
                   context
                       .read<EvaluacionProvider>()
-                      .updateEvaluacion(nuevaEvaluacion, materia as Materia);
+                      .updateEvaluacion(nuevaEvaluacion, materia);
                 }
 
                 Navigator.pop(context);
@@ -548,8 +548,6 @@ class _NotasScreenState extends State<NotasScreen> {
       ),
     );
   }
-
-// MANTENER TODOS LOS DEMÁS MÉTODOS SIN CAMBIOS
 
   void _showCorteDialog(BuildContext context, {materia, Corte? corte}) {
     final nombreController = TextEditingController(text: corte?.nombre ?? '');
@@ -573,7 +571,7 @@ class _NotasScreenState extends State<NotasScreen> {
                 padding: const EdgeInsets.all(8),
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.moradoPrincipal.withAlpha(26),
+                  color: Theme.of(context).brightness == Brightness.dark ? AppColors.moradoPrincipal.withValues(alpha: 0.2) : AppColors.moradoPrincipal.withAlpha(26),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -658,7 +656,7 @@ class _NotasScreenState extends State<NotasScreen> {
             child: const Text('CANCELAR'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.peligro),
             onPressed: () {
               context
                   .read<CorteProvider>()
@@ -685,7 +683,7 @@ class _NotasScreenState extends State<NotasScreen> {
             child: const Text('CANCELAR'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.peligro),
             onPressed: () {
               context
                   .read<EvaluacionProvider>()
@@ -740,11 +738,11 @@ class _NotasScreenState extends State<NotasScreen> {
   Color _getColorEstado(String estado) {
     switch (estado) {
       case 'ganando':
-        return Colors.green;
+        return AppColors.exito;
       case 'riesgo':
-        return Colors.orange;
+        return AppColors.riesgo;
       case 'perdiendo':
-        return Colors.red;
+        return AppColors.peligro;
       default:
         return Colors.grey;
     }

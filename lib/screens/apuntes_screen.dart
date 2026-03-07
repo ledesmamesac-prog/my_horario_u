@@ -1,7 +1,6 @@
 // file: lib/screens/apuntes_screen.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/apunte.dart';
@@ -33,20 +32,6 @@ class _ApuntesScreenState extends State<ApuntesScreen> {
       appBar: AppBar(
         title: const Text('Apuntes'),
         actions: [
-          // NUEVO: Botón para probar notificaciones
-          IconButton(
-            icon: const Icon(Icons.notifications_active_outlined),
-            tooltip: 'Probar notificación',
-            onPressed: () {
-              context.read<ApunteProvider>().sendTestNotification();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Enviando notificación de prueba...'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.search_rounded),
             onPressed: () => _mostrarBuscador(context),
@@ -85,6 +70,7 @@ class _ApuntesScreenState extends State<ApuntesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -92,28 +78,28 @@ class _ApuntesScreenState extends State<ApuntesScreen> {
           Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: AppColors.moradoClaro,
+              color: isDark ? const Color(0xFF3B0764) : AppColors.moradoClaro,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.sticky_note_2_outlined,
               size: 56,
-              color: AppColors.moradoPrincipal,
+              color: isDark ? AppColors.moradoClaro : AppColors.moradoPrincipal,
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Sin apuntes aún',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.textoOscuro,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Crea tu primer apunte académico',
-            style: TextStyle(color: AppColors.textoMedio),
+            style: TextStyle(color: isDark ? Colors.white60 : AppColors.textoMedio),
           ),
         ],
       ),
@@ -178,6 +164,7 @@ class _ApunteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final fecha = DateFormat('dd MMM yyyy').format(
       DateTime.parse(apunte.fechaCreacion),
     );
@@ -185,12 +172,12 @@ class _ApunteCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.fondoCard,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borde),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: AppColors.moradoPrincipal.withOpacity(0.05),
+            color: isDark ? Colors.black26 : AppColors.moradoPrincipal.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -219,10 +206,10 @@ class _ApunteCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         apunte.titulo,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textoOscuro,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -242,13 +229,12 @@ class _ApunteCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 if (apunte.contenido.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     apunte.contenido,
-                    style: const TextStyle(
-                      color: AppColors.textoMedio,
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : AppColors.textoMedio,
                       fontSize: 14,
                       height: 1.4,
                     ),
@@ -256,7 +242,6 @@ class _ApunteCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
-
                 if (apunte.tieneImagenes) ...[
                   const SizedBox(height: 12),
                   SizedBox(
@@ -272,7 +257,7 @@ class _ApunteCard extends StatelessWidget {
                             width: 80,
                             margin: const EdgeInsets.only(left: 6),
                             decoration: BoxDecoration(
-                              color: AppColors.moradoPrincipal.withOpacity(0.1),
+                              color: isDark ? AppColors.moradoPrincipal.withValues(alpha: 0.2) : AppColors.moradoPrincipal.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                               border:
                                   Border.all(color: AppColors.moradoPrincipal),
@@ -299,7 +284,7 @@ class _ApunteCard extends StatelessWidget {
                               File(apunte.imagenesPaths[i]),
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Container(
-                                color: AppColors.fondoSurface,
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                 child: const Center(
                                   child: Icon(Icons.broken_image_outlined),
                                 ),
@@ -311,9 +296,7 @@ class _ApunteCard extends StatelessWidget {
                     ),
                   ),
                 ],
-
                 const SizedBox(height: 12),
-
                 Row(
                   children: [
                     const Icon(Icons.calendar_today_rounded,
@@ -328,7 +311,7 @@ class _ApunteCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppColors.amarilloClaro,
+                          color: isDark ? const Color(0xFF422006) : AppColors.amarilloClaro,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(

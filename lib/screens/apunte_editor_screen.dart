@@ -172,12 +172,12 @@ class _ApunteEditorScreenState extends State<ApunteEditorScreen> {
 
             // Galería de imágenes
             if (_imagenesPaths.isNotEmpty) ...[
-              const Text(
+              Text(
                 'IMÁGENES',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textoMedio,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoMedio,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -217,13 +217,13 @@ class _ApunteEditorScreenState extends State<ApunteEditorScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: _recordatorio != null
-                      ? AppColors.amarilloClaro
-                      : AppColors.fondoSurface,
+                      ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF422006) : AppColors.amarilloClaro)
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: _recordatorio != null
                         ? AppColors.riesgo
-                        : AppColors.borde,
+                        : Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 child: Row(
@@ -232,7 +232,7 @@ class _ApunteEditorScreenState extends State<ApunteEditorScreen> {
                       Icons.notifications_rounded,
                       color: _recordatorio != null
                           ? AppColors.riesgo
-                          : AppColors.textoClaro,
+                          : (Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoClaro),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -242,8 +242,8 @@ class _ApunteEditorScreenState extends State<ApunteEditorScreen> {
                             : 'Agregar recordatorio',
                         style: TextStyle(
                           color: _recordatorio != null
-                              ? AppColors.riesgoTexto
-                              : AppColors.textoClaro,
+                              ? (Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.riesgoTexto)
+                              : (Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoClaro),
                           fontWeight: _recordatorio != null
                               ? FontWeight.w600
                               : FontWeight.normal,

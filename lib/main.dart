@@ -8,6 +8,7 @@ import 'providers/corte_provider.dart';
 import 'providers/evaluacion_provider.dart';
 import 'providers/tarea_provider.dart';
 import 'providers/apunte_provider.dart';
+import 'providers/theme_provider.dart'; // NUEVO
 import 'screens/dashboard_screen.dart';
 import 'screens/materias_screen.dart';
 import 'screens/horario_screen.dart';
@@ -48,13 +49,36 @@ class MyHorarioU extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EvaluacionProvider()),
         ChangeNotifierProvider(create: (_) => TareaProvider()),
         ChangeNotifierProvider(create: (_) => ApunteProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // NUEVO
       ],
-      child: MaterialApp(
-        title: 'My Horario U',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const MainNavigation(),
-      ),
+      child: const MyApp(),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'My Horario U',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const MainNavigation(),
+            '/materias': (context) => const MateriasScreen(),
+            '/horario': (context) => const HorarioScreen(),
+            '/notas': (context) => const NotasScreen(),
+            '/apuntes': (context) => const ApuntesScreen(),
+          },
+        );
+      },
     );
   }
 }
@@ -107,7 +131,18 @@ class _MainNavigationState extends State<MainNavigation> with WidgetsBindingObse
     await Future.delayed(const Duration(milliseconds: 500));
     if (mounted) {
       final horarioProvider = context.read<HorarioProvider>();
-      await horarioProvider.scheduleClassNotifications();
+      final materiaProvider = context.read<MateriaProvider>();
+
+      // Construir mapa materiaId → nombre para que las notificaciones
+      // muestren el nombre real de cada materia
+      final materiaNames = {
+        for (var m in materiaProvider.materias)
+          if (m.id != null) m.id!: m.nombre,
+      };
+
+      await horarioProvider.scheduleClassNotifications(
+        materiaNames: materiaNames,
+      );
     }
   }
 
@@ -119,17 +154,19 @@ class _MainNavigationState extends State<MainNavigation> with WidgetsBindingObse
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.fondoCard,
+          color: Theme.of(context).colorScheme.surface,
           border: Border(
-            top: BorderSide(color: AppColors.borde, width: 1),
+            top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 1),
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.moradoPrincipal.withOpacity(0.06),
+              color: isDark ? Colors.black26 : AppColors.moradoPrincipal.withValues(alpha: 0.06),
               blurRadius: 20,
               offset: const Offset(0, -4),
             ),
@@ -143,8 +180,8 @@ class _MainNavigationState extends State<MainNavigation> with WidgetsBindingObse
               navigationNotifier.value = index;
             },
             backgroundColor: Colors.transparent,
-            selectedItemColor: AppColors.moradoPrincipal,
-            unselectedItemColor: AppColors.textoClaro,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
+            unselectedItemColor: isDark ? Colors.white60 : AppColors.textoClaro,
             type: BottomNavigationBarType.fixed,
             elevation: 0,
             selectedFontSize: 11,

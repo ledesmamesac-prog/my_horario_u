@@ -13,7 +13,7 @@ import 'package:my_horario_u/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const my_horario_u());
+    await tester.pumpWidget(const MyHorarioU());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

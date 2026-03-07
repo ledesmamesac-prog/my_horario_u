@@ -27,8 +27,8 @@ class MateriaDetailModal extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.fondoPrincipal,
-            Color(materia.color).withOpacity(0.1),
+            Theme.of(context).colorScheme.surface,
+            Color(materia.color).withValues(alpha: 0.1),
           ],
         ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -141,7 +141,7 @@ class MateriaDetailModal extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.fondoCard,
+                    color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.surfaceContainerHighest : AppColors.fondoCard,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: colorEstado.withOpacity(0.5),

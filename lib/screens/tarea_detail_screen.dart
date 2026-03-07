@@ -55,7 +55,7 @@ class TareaDetailScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textoOscuro,
+                color: Theme.of(context).colorScheme.onSurface,
                 decoration:
                     tarea.completada ? TextDecoration.lineThrough : null,
               ),
@@ -64,6 +64,7 @@ class TareaDetailScreen extends StatelessWidget {
 
             // Materia
             _buildInfoCard(
+              context,
               icon: Icons.book_rounded,
               iconColor: Color(materia.color),
               title: 'Materia',
@@ -73,6 +74,7 @@ class TareaDetailScreen extends StatelessWidget {
 
             // Fecha de entrega
             _buildInfoCard(
+              context,
               icon: Icons.calendar_today_rounded,
               iconColor: esUrgente ? AppColors.peligro : AppColors.acento,
               title: 'Fecha de entrega',
@@ -95,6 +97,7 @@ class TareaDetailScreen extends StatelessWidget {
 
             // Prioridad
             _buildInfoCard(
+              context,
               icon: Icons.flag_rounded,
               iconColor: tareaProvider.getPrioridadColor(tarea.prioridad),
               title: 'Prioridad',
@@ -103,12 +106,12 @@ class TareaDetailScreen extends StatelessWidget {
 
             if (tarea.descripcion.isNotEmpty) ...[
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'DESCRIPCIÓN',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textoMedio,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoMedio,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -117,16 +120,16 @@ class TareaDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.fondoSurface,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.borde),
+                  border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.outline : AppColors.borde),
                 ),
                 child: Text(
                   tarea.descripcion,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     height: 1.6,
-                    color: AppColors.textoOscuro,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -169,7 +172,8 @@ class TareaDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard({
+  Widget _buildInfoCard(
+    BuildContext context, {
     required IconData icon,
     required Color iconColor,
     required String title,
@@ -179,9 +183,9 @@ class TareaDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.fondoCard,
+        color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.surface : AppColors.fondoCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borde),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Theme.of(context).colorScheme.outline : AppColors.borde),
       ),
       child: Row(
         children: [
@@ -200,9 +204,9 @@ class TareaDetailScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textoClaro,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoClaro,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -210,10 +214,10 @@ class TareaDetailScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   content,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textoOscuro,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

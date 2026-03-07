@@ -18,28 +18,29 @@ class MateriasScreen extends StatelessWidget {
         builder: (context, provider, _) {
           final materias = provider.materias;
           if (materias.isEmpty) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(28),
-                    decoration: const BoxDecoration(
-                      color: AppColors.moradoClaro,
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF3B0764) : AppColors.moradoClaro,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.book_rounded,
-                        size: 56, color: AppColors.moradoPrincipal),
+                    child: Icon(Icons.book_rounded,
+                        size: 56, color: isDark ? AppColors.moradoClaro : AppColors.moradoPrincipal),
                   ),
                   const SizedBox(height: 24),
-                  const Text('Sin materias',
+                  Text('Sin materias',
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textoOscuro)),
+                          color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 8),
-                  const Text('Agrega tu primera materia',
-                      style: TextStyle(color: AppColors.textoMedio)),
+                  Text('Agrega tu primera materia',
+                      style: TextStyle(color: isDark ? Colors.white60 : AppColors.textoMedio)),
                 ],
               ),
             );
@@ -122,15 +123,17 @@ class _MateriaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
-        color: AppColors.fondoCard,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borde),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: isDark ? Colors.black26 : Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -167,15 +170,15 @@ class _MateriaCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(materia.nombre,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
-                          color: AppColors.textoOscuro)),
+                          color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 2),
                   Text(
                     '${materia.codigo.isNotEmpty ? materia.codigo + ' · ' : ''}${materia.profesor}',
-                    style: const TextStyle(
-                        color: AppColors.textoMedio, fontSize: 13),
+                    style: TextStyle(
+                        color: isDark ? Colors.white60 : AppColors.textoMedio, fontSize: 13),
                   ),
                   const SizedBox(height: 4),
                   Container(
@@ -259,9 +262,9 @@ class _MateriaFormSheetState extends State<_MateriaFormSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.fondoCard,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
         left: 24,
@@ -287,10 +290,10 @@ class _MateriaFormSheetState extends State<_MateriaFormSheet> {
             const SizedBox(height: 20),
             Text(
               widget.materia == null ? 'Nueva Materia' : 'Editar Materia',
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textoOscuro),
+                  color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 20),
             TextField(

@@ -20,7 +20,6 @@ class ApunteDetailScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.fondoPrincipal,
       appBar: AppBar(
         title: const Text('Apunte'),
         actions: [
@@ -42,10 +41,10 @@ class ApunteDetailScreen extends StatelessWidget {
             // Título
             Text(
               apunte.titulo,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textoOscuro,
+                color: Theme.of(context).colorScheme.onSurface,
                 height: 1.2,
               ),
             ),
@@ -58,9 +57,9 @@ class ApunteDetailScreen extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.fondoSurface,
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.borde),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -69,8 +68,8 @@ class ApunteDetailScreen extends StatelessWidget {
                           size: 14, color: AppColors.textoClaro),
                       const SizedBox(width: 6),
                       Text(fecha,
-                          style: const TextStyle(
-                              fontSize: 12, color: AppColors.textoMedio)),
+                          style: TextStyle(
+                              fontSize: 12, color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : AppColors.textoMedio)),
                     ],
                   ),
                 ),
@@ -80,7 +79,7 @@ class ApunteDetailScreen extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.amarilloClaro,
+                      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF422006) : AppColors.amarilloClaro,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.riesgo),
                     ),
@@ -115,10 +114,10 @@ class ApunteDetailScreen extends StatelessWidget {
             if (apunte.contenido.isNotEmpty)
               Text(
                 apunte.contenido,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   height: 1.8,
-                  color: AppColors.textoOscuro,
+                  color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: 0.2,
                 ),
               ),
@@ -126,12 +125,12 @@ class ApunteDetailScreen extends StatelessWidget {
             // Imágenes
             if (apunte.tieneImagenes) ...[
               const SizedBox(height: 32),
-              const Text(
+              Text(
                 'IMÁGENES',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textoMedio,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoMedio,
                   letterSpacing: 1.2,
                 ),
               ),
@@ -178,10 +177,10 @@ class ApunteDetailScreen extends StatelessWidget {
                 File(imagePath),
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  color: AppColors.fondoSurface,
-                  child: const Center(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: Center(
                     child: Icon(Icons.broken_image_outlined,
-                        color: AppColors.textoClaro),
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white60 : AppColors.textoClaro),
                   ),
                 ),
               ),
